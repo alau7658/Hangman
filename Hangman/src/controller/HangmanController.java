@@ -253,6 +253,9 @@ public class HangmanController implements FileController {
             save(workFile);
     }
 
+    public void handleHintRequest() {
+
+    }
     @Override
     public void handleLoadRequest() throws IOException {
         boolean load = true;
