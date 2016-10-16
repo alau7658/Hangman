@@ -41,6 +41,7 @@ public class Workspace extends AppWorkspaceComponent {
     BorderPane        figurePane;        // container to display the namesake graphic of the (potentially) hanging person
     VBox              gameTextsPane;     // container to display the text-related parts of the game
     HBox              guessedLetters;    // text area displaying all the letters guessed so far
+    HBox              allGuesses;
     HBox              remainingGuessBox; // container to display the number of remaining guesses
     Button            startGame;         // the button to start playing a game of Hangman
     HangmanController controller;
@@ -74,9 +75,10 @@ public class Workspace extends AppWorkspaceComponent {
         guessedLetters = new HBox();
         guessedLetters.setStyle("-fx-background-color: transparent;");
         remainingGuessBox = new HBox();
+        allGuesses = new HBox();
         gameTextsPane = new VBox();
 
-        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters);
+        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters, allGuesses);
 
         bodyPane = new HBox();
         bodyPane.getChildren().addAll(figurePane, gameTextsPane);
@@ -95,11 +97,12 @@ public class Workspace extends AppWorkspaceComponent {
         hangman.getChildren().addAll(red, label1);
         Pane pane = new Pane();
         hangmanImage = pane.getChildren();
-        initHangman();
         initHanger();
+        initHangman();
+
 
         workspace = new VBox();
-        workspace.getChildren().addAll(headPane, bodyPane, footToolbar, pane,label1);
+        workspace.getChildren().addAll(headPane, bodyPane, pane, footToolbar);
     }
 
     public void initHangman(){
@@ -211,6 +214,12 @@ public class Workspace extends AppWorkspaceComponent {
         return gameTextsPane;
     }
 
+    public HBox getAllGuesses(){
+        return allGuesses;
+    }
+
+    public ObservableList<Node> getHangmanImage(){ return hangmanImage;}
+
     public HBox getRemainingGuessBox() {
         return remainingGuessBox;
     }
@@ -223,8 +232,11 @@ public class Workspace extends AppWorkspaceComponent {
         guessedLetters = new HBox();
         guessedLetters.setStyle("-fx-background-color: transparent;");
         remainingGuessBox = new HBox();
+        allGuesses = new HBox();
         gameTextsPane = new VBox();
-        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters);
+        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters, allGuesses);
         bodyPane.getChildren().setAll(figurePane, gameTextsPane);
+        for(int i = 0; i < hangmanImage.size(); i++)
+            hangmanImage.get(i).setVisible(false);
     }
 }

@@ -3,6 +3,10 @@ package data;
 import com.fasterxml.jackson.core.*;
 import components.AppDataComponent;
 import components.AppFileComponent;
+import components.AppWorkspaceComponent;
+import gui.Workspace;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,12 +22,14 @@ public class GameDataFile implements AppFileComponent {
     public static final String TARGET_WORD  = "TARGET_WORD";
     public static final String GOOD_GUESSES = "GOOD_GUESSES";
     public static final String BAD_GUESSES  = "BAD_GUESSES";
+    public static final String ALL_GUESSES  = "ALL_GUESSES";
 
     @Override
     public void saveData(AppDataComponent data, Path to) {
         GameData       gamedata    = (GameData) data;
         Set<Character> goodguesses = gamedata.getGoodGuesses();
         Set<Character> badguesses  = gamedata.getBadGuesses();
+        Set<Character> allguesses  = gamedata.getAllGuesses();
 
         JsonFactory jsonFactory = new JsonFactory();
 
@@ -44,6 +50,12 @@ public class GameDataFile implements AppFileComponent {
             generator.writeFieldName(BAD_GUESSES);
             generator.writeStartArray(badguesses.size());
             for (Character c : badguesses)
+                generator.writeString(c.toString());
+            generator.writeEndArray();
+
+            generator.writeFieldName(ALL_GUESSES);
+            generator.writeStartArray(allguesses.size());
+            for (Character c : allguesses)
                 generator.writeString(c.toString());
             generator.writeEndArray();
 
@@ -80,6 +92,11 @@ public class GameDataFile implements AppFileComponent {
                             gamedata.addGoodGuess(jsonParser.getText().charAt(0));
                         break;
                     case BAD_GUESSES:
+                        jsonParser.nextToken();
+                        while (jsonParser.nextToken() != JsonToken.END_ARRAY)
+                            gamedata.addAllGuesses(jsonParser.getText().charAt(0));
+                        break;
+                    case ALL_GUESSES:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                             gamedata.addBadGuess(jsonParser.getText().charAt(0));

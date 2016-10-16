@@ -2,7 +2,10 @@ package data;
 
 import apptemplate.AppTemplate;
 import components.AppDataComponent;
+import components.AppWorkspaceComponent;
 import controller.GameError;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -25,6 +28,7 @@ public class GameData implements AppDataComponent {
     private String         targetWord;
     private Set<Character> goodGuesses;
     private Set<Character> badGuesses;
+    private Set<Character> allGuesses;
     private int            remainingGuesses;
     public  AppTemplate    appTemplate;
 
@@ -38,6 +42,7 @@ public class GameData implements AppDataComponent {
             this.targetWord = setTargetWord();
             this.goodGuesses = new HashSet<>();
             this.badGuesses = new HashSet<>();
+            this.allGuesses = new HashSet<>();
             this.remainingGuesses = TOTAL_NUMBER_OF_GUESSES_ALLOWED;
         } else {
             this.appTemplate = appTemplate;
@@ -48,6 +53,7 @@ public class GameData implements AppDataComponent {
         this.targetWord = setTargetWord();
         this.goodGuesses = new HashSet<>();
         this.badGuesses = new HashSet<>();
+        this.allGuesses = new HashSet<>();
         this.remainingGuesses = TOTAL_NUMBER_OF_GUESSES_ALLOWED;
         if (checkNeedHint(targetWord))
             System.out.print("lol");
@@ -58,6 +64,7 @@ public class GameData implements AppDataComponent {
         this.targetWord = null;
         this.goodGuesses = new HashSet<>();
         this.badGuesses = new HashSet<>();
+        this.allGuesses = new HashSet<>();
         this.remainingGuesses = TOTAL_NUMBER_OF_GUESSES_ALLOWED;
         appTemplate.getWorkspaceComponent().reloadWorkspace();
     }
@@ -135,6 +142,13 @@ public class GameData implements AppDataComponent {
         return this;
     }
 
+    public Set<Character> getAllGuesses() {return allGuesses;}
+
+    public GameData setAllGuesses(Set<Character> allGuesses){
+        this.allGuesses = allGuesses;
+        return this;
+    }
+
     public int getRemainingGuesses() {
         return remainingGuesses;
     }
@@ -150,5 +164,8 @@ public class GameData implements AppDataComponent {
         }
     }
 
+    public void addAllGuesses(char c){
+        allGuesses.add(c);
+    }
 
 }
