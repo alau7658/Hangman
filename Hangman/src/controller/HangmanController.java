@@ -45,6 +45,7 @@ public class HangmanController implements FileController {
     private Button      gameButton;  // shared reference to the "start game" button
     private Label       remains;     // dynamically updated label that indicates the number of remaining guesses
     private Path        workFile;
+    private int         guessesLeft;
 
     public HangmanController(AppTemplate appTemplate, Button gameButton) {
         this(appTemplate);

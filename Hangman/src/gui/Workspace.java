@@ -9,14 +9,18 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.paint.Color;
 import propertymanager.PropertyManager;
 import ui.AppGUI;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static hangman.HangmanProperties.*;
 
@@ -40,6 +44,7 @@ public class Workspace extends AppWorkspaceComponent {
     HBox              remainingGuessBox; // container to display the number of remaining guesses
     Button            startGame;         // the button to start playing a game of Hangman
     HangmanController controller;
+    ObservableList<Node> hangmanImage;
 
     /**
      * Constructor for initializing the workspace, note that this constructor
@@ -82,9 +87,93 @@ public class Workspace extends AppWorkspaceComponent {
         HBox.setHgrow(blankBoxLeft, Priority.ALWAYS);
         HBox.setHgrow(blankBoxRight, Priority.ALWAYS);
         footToolbar = new ToolBar(blankBoxLeft, startGame, blankBoxRight);
+        GridPane hangman = new GridPane();
+        Label label1 = new Label("This is where the hangman will be located");
+        ArrayList hangmanSpace = new ArrayList<Rectangle>();
+        VBox red = new VBox();
+        red.getChildren().addAll(hangmanSpace);
+        hangman.getChildren().addAll(red, label1);
+        Pane pane = new Pane();
+        hangmanImage = pane.getChildren();
+        initHangman();
+        initHanger();
 
         workspace = new VBox();
-        workspace.getChildren().addAll(headPane, bodyPane, footToolbar);
+        workspace.getChildren().addAll(headPane, bodyPane, footToolbar, pane,label1);
+    }
+
+    public void initHangman(){
+        ArrayList hangman = new ArrayList<Shape>();
+
+        Circle head = new Circle(200,112,35);
+        head.setStroke(Color.BLACK);
+        head.setFill(Color.WHITE);
+        head.setStrokeWidth(5);
+        head.setVisible(false);
+        hangmanImage.add(head);
+        hangman.add(head);
+
+        Line body = new Line(200,200,200,150);
+        body.setStroke(Color.BLACK);
+        body.setStrokeWidth(5);
+        body.setVisible(false);
+        hangmanImage.add(body);
+        hangman.add(body);
+
+        Line leftArm = new Line(150,225,200,175);
+        leftArm.setStroke(Color.BLACK);
+        leftArm.setStrokeWidth(5);
+        leftArm.setVisible(false);
+        hangmanImage.add(leftArm);
+        hangman.add(leftArm);
+
+        Line rightArm = new Line(250,225,200,175);
+        rightArm.setStroke(Color.BLACK);
+        rightArm.setStrokeWidth(5);
+        rightArm.setVisible(false);
+        hangmanImage.add(rightArm);
+        hangman.add(rightArm);
+
+        Line leftLeg = new Line(200,200,175,275);
+        leftLeg.setStroke(Color.BLACK);
+        leftLeg.setStrokeWidth(5);
+        leftLeg.setVisible(false);
+        hangmanImage.add(leftLeg);
+        hangman.add(leftLeg);
+
+        Line rightLeg = new Line(200,200,225,275);
+        rightLeg.setStroke(Color.BLACK);
+        rightLeg.setStrokeWidth(5);
+        rightLeg.setVisible(false);
+        hangmanImage.add(rightLeg);
+        hangman.add(rightLeg);
+
+    }
+
+    public void initHanger(){
+        Rectangle hangerBottom = new Rectangle(25, 25, 200, 25);
+        hangerBottom.setStroke(Color.BROWN);
+        hangerBottom.setStrokeWidth(3);
+        hangerBottom.setVisible(false);
+        hangmanImage.add(hangerBottom);
+
+        Rectangle hangerStand = new Rectangle(25, 25, 25, 300);
+        hangerStand.setStroke(Color.BROWN);
+        hangerStand.setStrokeWidth(3);
+        hangerStand.setVisible(false);
+        hangmanImage.add(hangerStand);
+
+        Rectangle hangerTop = new Rectangle(25, 300, 200, 25);
+        hangerTop.setStroke(Color.BROWN);
+        hangerTop.setStrokeWidth(3);
+        hangerTop.setVisible(false);
+        hangmanImage.add(hangerTop);
+
+        Line hangerHook = new Line(200, 25, 200, 75);
+        hangerHook.setStroke(Color.BROWN);
+        hangerHook.setStrokeWidth(3);
+        hangerHook.setVisible(false);
+        hangmanImage.add(hangerHook);
     }
 
     private void setupHandlers() {
