@@ -89,6 +89,7 @@ public class HangmanController implements FileController {
             giveHint  = workspace.getGiveHint();
         }
         giveHint.setDisable(false);
+
     }
     public void disableHintButton() {
         if (giveHint == null){

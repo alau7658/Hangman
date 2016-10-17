@@ -121,8 +121,8 @@ public class AppGUI implements AppStyleArbiter {
             System.exit(1);
         }
 
-        newButton.setOnAction(e -> fileController.handleNewRequest());
-        saveButton.setOnAction(e -> {
+        newButton.setOnMouseClicked(e -> fileController.handleNewRequest());
+        saveButton.setOnMouseClicked(e -> {
             try {
                 fileController.handleSaveRequest();
             } catch (IOException e1) {
@@ -130,14 +130,14 @@ public class AppGUI implements AppStyleArbiter {
                 System.exit(1);
             }
         });
-        loadButton.setOnAction(e -> {
+        loadButton.setOnMouseClicked(e -> {
             try {
                 fileController.handleLoadRequest();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         });
-        exitButton.setOnAction(e -> fileController.handleExitRequest());
+        exitButton.setOnMouseClicked(e -> fileController.handleExitRequest());
     }
 
     public void updateWorkspaceToolbar(boolean savable) {

@@ -181,8 +181,8 @@ public class Workspace extends AppWorkspaceComponent {
     private void setupHandlers() {
         startGame.setOnMouseClicked(e -> controller.start());
         giveHint.setOnMouseClicked(event -> controller.handleHintRequest());
-
     }
+
 
     /**
      * This function specifies the CSS for all the UI components known at the time the workspace is initially
