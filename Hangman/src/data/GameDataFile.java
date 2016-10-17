@@ -23,6 +23,7 @@ public class GameDataFile implements AppFileComponent {
     public static final String GOOD_GUESSES = "GOOD_GUESSES";
     public static final String BAD_GUESSES  = "BAD_GUESSES";
     public static final String ALL_GUESSES  = "ALL_GUESSES";
+    public static final String HINT_USED    = "HINT_USED";
 
     @Override
     public void saveData(AppDataComponent data, Path to) {
@@ -58,6 +59,8 @@ public class GameDataFile implements AppFileComponent {
             for (Character c : allguesses)
                 generator.writeString(c.toString());
             generator.writeEndArray();
+
+            generator.writeBooleanField(HINT_USED, (Boolean)gamedata.isHintUsed());
 
             generator.writeEndObject();
 
@@ -100,6 +103,10 @@ public class GameDataFile implements AppFileComponent {
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                             gamedata.addAllGuesses(jsonParser.getText().charAt(0));
+                        break;
+                    case HINT_USED:
+                        jsonParser.nextToken();
+                        gamedata.setIsHintUsed((jsonParser.getBooleanValue()));
                         break;
                     default:
                         throw new JsonParseException(jsonParser, "Unable to load JSON data");

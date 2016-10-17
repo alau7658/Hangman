@@ -3,6 +3,7 @@ package gui;
 import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.HangmanController;
+import data.GameData;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -44,6 +45,7 @@ public class Workspace extends AppWorkspaceComponent {
     HBox              allGuesses;
     HBox              remainingGuessBox; // container to display the number of remaining guesses
     Button            startGame;         // the button to start playing a game of Hangman
+    Button            giveHint = new Button("Give Hint");
     HangmanController controller;
     ObservableList<Node> hangmanImage;
 
@@ -85,17 +87,16 @@ public class Workspace extends AppWorkspaceComponent {
         bodyPane.getChildren().addAll(figurePane, gameTextsPane);
 
         startGame = new Button("Start Playing");
+        giveHint.setVisible(false);
         HBox blankBoxLeft  = new HBox();
         HBox blankBoxRight = new HBox();
         HBox.setHgrow(blankBoxLeft, Priority.ALWAYS);
         HBox.setHgrow(blankBoxRight, Priority.ALWAYS);
-        footToolbar = new ToolBar(blankBoxLeft, startGame, blankBoxRight);
-        GridPane hangman = new GridPane();
-        Label label1 = new Label("This is where the hangman will be located");
-        ArrayList hangmanSpace = new ArrayList<Rectangle>();
-        VBox red = new VBox();
-        red.getChildren().addAll(hangmanSpace);
-        hangman.getChildren().addAll(red, label1);
+        //StackPane stackPane = new StackPane();
+       // stackPane.getChildren().setAll(remainingGuessBox,guessedLetters, allGuesses);
+       // HBox root = new HBox();
+      //  root.getChildren().addAll(stackPane);
+        footToolbar = new ToolBar(blankBoxLeft, startGame, giveHint, blankBoxRight);
         Pane pane = new Pane();
         hangmanImage = pane.getChildren();
         initHanger();
@@ -155,7 +156,7 @@ public class Workspace extends AppWorkspaceComponent {
     }
 
     public void initHanger(){
-        Rectangle hangerBottom = new Rectangle(25, 25, 200, 25);
+        Rectangle hangerBottom = new Rectangle(25, 300, 200, 25);
         hangerBottom.setStroke(Color.BROWN);
         hangerBottom.setStrokeWidth(3);
         hangerBottom.setVisible(false);
@@ -167,7 +168,7 @@ public class Workspace extends AppWorkspaceComponent {
         hangerStand.setVisible(false);
         hangmanImage.add(hangerStand);
 
-        Rectangle hangerTop = new Rectangle(25, 300, 200, 25);
+        Rectangle hangerTop = new Rectangle(25, 25, 200, 25);
         hangerTop.setStroke(Color.BROWN);
         hangerTop.setStrokeWidth(3);
         hangerTop.setVisible(false);
@@ -182,6 +183,8 @@ public class Workspace extends AppWorkspaceComponent {
 
     private void setupHandlers() {
         startGame.setOnMouseClicked(e -> controller.start());
+        giveHint.setOnMouseClicked(event -> controller.handleHintRequest());
+
     }
 
     /**
@@ -229,8 +232,12 @@ public class Workspace extends AppWorkspaceComponent {
         return startGame;
     }
 
+    public Button getGiveHint() { return giveHint; }
+
     public void reinitialize() {
         guessedLetters = new HBox();
+        guessedLetters.setSpacing(10);
+        giveHint.setVisible(false);
         guessedLetters.setStyle("-fx-background-color: transparent;");
         remainingGuessBox = new HBox();
         allGuesses = new HBox();

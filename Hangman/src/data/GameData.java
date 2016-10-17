@@ -1,6 +1,7 @@
 package data;
 
 import apptemplate.AppTemplate;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import components.AppDataComponent;
 import components.AppWorkspaceComponent;
 import controller.GameError;
@@ -31,6 +32,8 @@ public class GameData implements AppDataComponent {
     private Set<Character> allGuesses;
     private int            remainingGuesses;
     public  AppTemplate    appTemplate;
+    @JsonProperty
+    private boolean        hintUsed;
 
     public GameData(AppTemplate appTemplate) {
         this(appTemplate, false);
@@ -55,8 +58,7 @@ public class GameData implements AppDataComponent {
         this.badGuesses = new HashSet<>();
         this.allGuesses = new HashSet<>();
         this.remainingGuesses = TOTAL_NUMBER_OF_GUESSES_ALLOWED;
-        if (checkNeedHint(targetWord))
-            System.out.print("lol");
+        hintUsed = false;
     }
 
     @Override
@@ -124,6 +126,12 @@ public class GameData implements AppDataComponent {
         return this;
     }
 
+    public boolean isHintUsed(){return hintUsed;}
+
+    public void setIsHintUsed(boolean hintUsed) {
+        this.hintUsed = hintUsed;
+    }
+
     public Set<Character> getGoodGuesses() {
         return goodGuesses;
     }
@@ -151,6 +159,10 @@ public class GameData implements AppDataComponent {
 
     public int getRemainingGuesses() {
         return remainingGuesses;
+    }
+
+    public void setRemainingGuesses(int remainingGuesses){
+        this.remainingGuesses = remainingGuesses;
     }
 
     public void addGoodGuess(char c) {

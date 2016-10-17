@@ -7,12 +7,14 @@ import hangman.Hangman;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -44,19 +46,23 @@ public class HangmanController implements FileController {
     private GameData    gamedata;    // shared reference to the game being played, loaded or saved
     private GameState   gamestate;   // the state of the game being shown in the workspace
     private Text[]      progress;    // reference to the text area for the word
+    private Text[]      underlines;
     private Text[]      alldaguesses;
     private boolean     success;     // whether or not player was successful
     private int         discovered;  // the number of letters already discovered
     private Button      gameButton;  // shared reference to the "start game" button
+    private Button      giveHint;
     private Label       remains;     // dynamically updated label that indicates the number of remaining guesses
     private Path        workFile;
     private int         guessesLeft;
     private ObservableList<Node> hangmanImage;
     private char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    private boolean flag = false;
 
-    public HangmanController(AppTemplate appTemplate, Button gameButton) {
+    public HangmanController(AppTemplate appTemplate, Button gameButton, Button giveHint) {
         this(appTemplate);
         this.gameButton = gameButton;
+        this.giveHint = giveHint;
     }
 
     public HangmanController(AppTemplate appTemplate) {
@@ -78,6 +84,21 @@ public class HangmanController implements FileController {
             gameButton = workspace.getStartGame();
         }
         gameButton.setDisable(true);
+    }
+
+    public void enableHintButton() {
+        if (giveHint == null) {
+            Workspace workspace = (Workspace) appTemplate.getWorkspaceComponent();
+            giveHint  = workspace.getGiveHint();
+        }
+        giveHint.setDisable(false);
+    }
+    public void disableHintButton() {
+        if (giveHint == null){
+            Workspace workspace = (Workspace) appTemplate.getWorkspaceComponent();
+            giveHint  = workspace.getGiveHint();
+        }
+        giveHint.setDisable(true);
     }
 
     public void setGameState(GameState gamestate) {
@@ -109,6 +130,10 @@ public class HangmanController implements FileController {
         HBox remainingGuessBox = gameWorkspace.getRemainingGuessBox();
         HBox guessedLetters    = (HBox) gameWorkspace.getGameTextsPane().getChildren().get(1);
         HBox allGuesses        = gameWorkspace.getAllGuesses();
+        if (gamedata.checkNeedHint(gamedata.getTargetWord())) {
+            giveHint = gameWorkspace.getGiveHint();
+            giveHint.setVisible(true);
+        }
         remains = new Label(Integer.toString(GameData.TOTAL_NUMBER_OF_GUESSES_ALLOWED));
         remainingGuessBox.getChildren().addAll(new Label("Remaining Guesses: "), remains);
         allGuesses.getChildren().addAll(new Label("Letters Guessed: "));
@@ -119,6 +144,7 @@ public class HangmanController implements FileController {
     private void end() {
         appTemplate.getGUI().getPrimaryScene().setOnKeyTyped(null);
         gameButton.setDisable(true);
+        giveHint.setDisable(true);
         setGameState(GameState.ENDED);
         appTemplate.getGUI().updateWorkspaceToolbar(gamestate.equals(GameState.INITIALIZED_MODIFIED));
         Platform.runLater(() -> {
@@ -137,12 +163,27 @@ public class HangmanController implements FileController {
     private void initWordGraphics(HBox guessedLetters, HBox allGuesses) {
         char[] targetword = gamedata.getTargetWord().toCharArray();
         progress = new Text[targetword.length];
+        underlines = new Text[targetword.length];
         for (int i = 0; i < progress.length; i++) {
             progress[i] = new Text(Character.toString(targetword[i]));
             progress[i].setVisible(false);
+            underlines[i] = new Text("_");
+            underlines[i].setVisible(true);
         }
         guessedLetters.getChildren().addAll(progress);
+        guessedLetters.getChildren().addAll(underlines);
 
+        //Line[] spaces = new Line [gamedata.getTargetWord().length()];
+       // int xStart = 375;
+       // int lineLength = 25;
+      //  int lineSpacing = 35;
+      //  for (int i = 0; i < spaces.length; i++) {
+     //       int xcoord = xStart + (lineSpacing * i);
+     //       spaces[i] = new Line(xcoord, 225, xcoord - lineLength, 225);
+    //        spaces[i].setStroke(Color.BLACK);
+   //         spaces[i].setStrokeWidth(3);
+   //         hangmanImage.addAll(spaces[i]);
+     //   }
 
         alldaguesses = new Text[alphabet.length];
         for (int i = 0; i < alphabet.length; i++){
@@ -150,7 +191,6 @@ public class HangmanController implements FileController {
             alldaguesses[i].setVisible(true);
         }
         allGuesses.getChildren().addAll(alldaguesses);
-
     }
 
     public void play() {
@@ -190,6 +230,8 @@ public class HangmanController implements FileController {
                     }
                     setGameState(GameState.INITIALIZED_MODIFIED);
                 });
+                if (gamedata.getRemainingGuesses() == 1)
+                    disableHintButton();
                 if (gamedata.getRemainingGuesses() <= 0 || success) {
                     for (int i = 0; i < progress.length; i++){
                         if (!progress[i].isVisible()) {
@@ -222,6 +264,13 @@ public class HangmanController implements FileController {
         HBox remainingGuessBox = gameWorkspace.getRemainingGuessBox();
         remains = new Label(Integer.toString(gamedata.getRemainingGuesses()));
         remainingGuessBox.getChildren().addAll(new Label("Remaining Guesses: "), remains);
+
+        giveHint = gameWorkspace.getGiveHint();
+        if (gamedata.checkNeedHint(gamedata.getTargetWord()) && gamedata.isHintUsed() == false) {
+            enableHintButton();
+            giveHint.setVisible(true);
+        }
+
 
         hangmanImage = gameWorkspace.getHangmanImage();
         for(int i = 0; i < gamedata.getBadGuesses().size(); i++)
@@ -279,7 +328,9 @@ public class HangmanController implements FileController {
             ensureActivatedWorkspace();                            // ensure workspace is activated
             workFile = null;                                       // new workspace has never been saved to a file
             ((Workspace) appTemplate.getWorkspaceComponent()).reinitialize();
+
             enableGameButton();
+            enableHintButton();
         }
         if (gamestate.equals(GameState.ENDED)) {
             appTemplate.getGUI().updateWorkspaceToolbar(false);
@@ -311,8 +362,36 @@ public class HangmanController implements FileController {
     }
 
     public void handleHintRequest() {
+        for (int i = 0; i < gamedata.getTargetWord().length(); i++) {
+                if (!progress[i].isVisible()) {
+                    progress[i].setVisible(true);
+                    gamedata.addGoodGuess(gamedata.getTargetWord().charAt(i));
+                    gamedata.addBadGuess(gamedata.getTargetWord().charAt(i));
+                    gamedata.addAllGuesses(gamedata.getTargetWord().charAt(i));
+                    discovered++;
+                    Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+                    hangmanImage = gameWorkspace.getHangmanImage();
+                    for (int x = 0; x < gamedata.getBadGuesses().size(); x++)
+                        hangmanImage.get(x).setVisible(true);
+                    for (int y = 0; y < alphabet.length; y++){
+                        if (gamedata.getAllGuesses().contains(alphabet[y])){
+                            alldaguesses[y].setStroke(Color.RED);
+                        }
+                    }
+                    remains.setText(Integer.toString(gamedata.getRemainingGuesses()));
+                    break;
+                }
+            }
+        for (int i = 0; i <gamedata.getTargetWord().length(); i++) {
+            if (!progress[i].isVisible() && gamedata.getGoodGuesses().contains(progress[i].getText().charAt(0))){
+                progress[i].setVisible(true);
+            }
+        }
 
+        disableHintButton();
+        gamedata.setIsHintUsed(true);
     }
+
     @Override
     public void handleLoadRequest() throws IOException {
         boolean load = true;
