@@ -76,6 +76,7 @@ public class Workspace extends AppWorkspaceComponent {
         guessedLetters.setStyle("-fx-background-color: transparent;");
         remainingGuessBox = new HBox();
         allGuesses = new HBox();
+        allGuesses.setSpacing(4);
         gameTextsPane = new VBox();
 
         gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters, allGuesses);
@@ -233,6 +234,7 @@ public class Workspace extends AppWorkspaceComponent {
         guessedLetters.setStyle("-fx-background-color: transparent;");
         remainingGuessBox = new HBox();
         allGuesses = new HBox();
+        allGuesses.setSpacing(4);
         gameTextsPane = new VBox();
         gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters, allGuesses);
         bodyPane.getChildren().setAll(figurePane, gameTextsPane);

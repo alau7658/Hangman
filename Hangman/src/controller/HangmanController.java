@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -125,7 +126,7 @@ public class HangmanController implements FileController {
             AppMessageDialogSingleton dialog     = AppMessageDialogSingleton.getSingleton();
             String                    endMessage = manager.getPropertyValue(success ? GAME_WON_MESSAGE : GAME_LOST_MESSAGE);
             if (!success)
-                endMessage += String.format(" (the word was \"%s\")", gamedata.getTargetWord());
+                endMessage += String.format(" :(");
             if (dialog.isShowing())
                 dialog.toFront();
             else
@@ -146,7 +147,7 @@ public class HangmanController implements FileController {
         alldaguesses = new Text[alphabet.length];
         for (int i = 0; i < alphabet.length; i++){
             alldaguesses[i] = new Text(Character.toString(alphabet[i]));
-            alldaguesses[i].setVisible(false);
+            alldaguesses[i].setVisible(true);
         }
         allGuesses.getChildren().addAll(alldaguesses);
 
@@ -164,7 +165,7 @@ public class HangmanController implements FileController {
                         gamedata.addAllGuesses(guess);
                         for (int i = 0; i < alphabet.length; i++){
                             if (alphabet[i] == guess){
-                                alldaguesses[i].setVisible(true);
+                                alldaguesses[i].setStroke(Color.RED);
                             }
                         }
                         boolean goodguess = false;
@@ -189,8 +190,15 @@ public class HangmanController implements FileController {
                     }
                     setGameState(GameState.INITIALIZED_MODIFIED);
                 });
-                if (gamedata.getRemainingGuesses() <= 0 || success)
+                if (gamedata.getRemainingGuesses() <= 0 || success) {
+                    for (int i = 0; i < progress.length; i++){
+                        if (!progress[i].isVisible()) {
+                            progress[i].setStroke(Color.BLUE);
+                            progress[i].setVisible(true);
+                        }
+                    }
                     stop();
+                }
             }
 
             @Override
@@ -208,7 +216,8 @@ public class HangmanController implements FileController {
         gameWorkspace.reinitialize();
 
         HBox guessedLetters = (HBox) gameWorkspace.getGameTextsPane().getChildren().get(1);
-        restoreWordGraphics(guessedLetters);
+        HBox  allGuesses    = (HBox) gameWorkspace.getAllGuesses();
+        restoreWordGraphics(guessedLetters, allGuesses);
 
         HBox remainingGuessBox = gameWorkspace.getRemainingGuessBox();
         remains = new Label(Integer.toString(gamedata.getRemainingGuesses()));
@@ -222,7 +231,8 @@ public class HangmanController implements FileController {
         play();
     }
 
-    private void restoreWordGraphics(HBox guessedLetters) {
+    private void restoreWordGraphics(HBox guessedLetters, HBox allGuesses) {
+        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
         discovered = 0;
         char[] targetword = gamedata.getTargetWord().toCharArray();
         progress = new Text[targetword.length];
@@ -233,6 +243,19 @@ public class HangmanController implements FileController {
                 discovered++;
         }
         guessedLetters.getChildren().addAll(progress);
+
+        allGuesses        = gameWorkspace.getAllGuesses();
+        alldaguesses = new Text[alphabet.length];
+        for (int i = 0; i < alphabet.length; i++){
+            alldaguesses[i] = new Text(Character.toString(alphabet[i]));
+            alldaguesses[i].setVisible(true);
+        }
+        allGuesses.getChildren().addAll(alldaguesses);
+        for (int i = 0; i < alphabet.length; i++){
+            if (gamedata.getAllGuesses().contains(alphabet[i])){
+                alldaguesses[i].setStroke(Color.RED);
+            }
+        }
     }
 
     private boolean alreadyGuessed(char c) {

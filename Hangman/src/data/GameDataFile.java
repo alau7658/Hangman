@@ -94,12 +94,12 @@ public class GameDataFile implements AppFileComponent {
                     case BAD_GUESSES:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            gamedata.addAllGuesses(jsonParser.getText().charAt(0));
+                            gamedata.addBadGuess(jsonParser.getText().charAt(0));
                         break;
                     case ALL_GUESSES:
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            gamedata.addBadGuess(jsonParser.getText().charAt(0));
+                            gamedata.addAllGuesses(jsonParser.getText().charAt(0));
                         break;
                     default:
                         throw new JsonParseException(jsonParser, "Unable to load JSON data");
