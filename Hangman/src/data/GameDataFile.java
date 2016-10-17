@@ -3,10 +3,6 @@ package data;
 import com.fasterxml.jackson.core.*;
 import components.AppDataComponent;
 import components.AppFileComponent;
-import components.AppWorkspaceComponent;
-import gui.Workspace;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 /**
- * @author Ritwik Banerjee
+ * @author Andy Lau, Ritwik Banerjee
  */
 public class GameDataFile implements AppFileComponent {
 

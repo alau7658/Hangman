@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * @author Ritwik Banerjee
+ * @author Andy Lau, Ritwik Banerjee
  */
 public class GameData implements AppDataComponent {
 
@@ -32,7 +32,6 @@ public class GameData implements AppDataComponent {
     private Set<Character> allGuesses;
     private int            remainingGuesses;
     public  AppTemplate    appTemplate;
-    @JsonProperty
     private boolean        hintUsed;
 
     public GameData(AppTemplate appTemplate) {
@@ -58,7 +57,6 @@ public class GameData implements AppDataComponent {
         this.badGuesses = new HashSet<>();
         this.allGuesses = new HashSet<>();
         this.remainingGuesses = TOTAL_NUMBER_OF_GUESSES_ALLOWED;
-        hintUsed = false;
     }
 
     @Override
@@ -115,10 +113,7 @@ public class GameData implements AppDataComponent {
 
     public boolean checkNeedHint(String word){
         long uniqueChars = word.chars().distinct().count();
-        if (uniqueChars > 7)
-            return true;
-        else
-            return false;
+        return uniqueChars > 7;
     }
 
     public GameData setTargetWord(String targetWord) {
